@@ -1,0 +1,1 @@
+﻿document.writeln("<font color=\'#ff0000\'>2023-01-12</font>");
