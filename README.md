@@ -22,6 +22,8 @@
   <span>・</span>
   <a href="https://artplayer.org/?libs=./uncompiled/artplayer-plugin-danmuku/index.js&example=danmuku">弹幕演示</a>
   <span>・</span>
+  <a href="./CHANGELOG_CN.md">更新记录</a>
+  <span>・</span>
 </p>
 
 <p align="center">
@@ -31,9 +33,11 @@
 </p>
 
 ## Home Page
+
 [https://artplayer.org](https://artplayer.org)
 
 ## Mobile Demo
+
 <img src="./images/qrcode.png" width="250">
 
 ## Features

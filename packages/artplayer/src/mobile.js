@@ -19,6 +19,8 @@ export default class Mobile {
             $video[key] = option.moreVideoAttr[key];
         });
 
+        $video.controls = true;
+
         if (option.muted) {
             $video.muted = option.muted;
         }
@@ -44,7 +46,6 @@ export default class Mobile {
         const typeCallback = option.customType[typeName];
         if (typeName && typeCallback) {
             typeCallback($video, option.url, art);
-            art.emit('customType', typeName);
         } else {
             $video.src = option.url;
             art.emit('url', $video.src);

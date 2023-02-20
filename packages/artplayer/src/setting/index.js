@@ -3,23 +3,17 @@ import aspectRatio from './aspectRatio';
 import playbackRate from './playbackRate';
 import subtitleOffset from './subtitleOffset';
 import Component from '../utils/component';
-import { def, has, append, addClass, setStyle, inverseClass, createElement, includeFromEvent } from '../utils';
-
-function makeRecursion(option, parentItem, parentList) {
-    for (let index = 0; index < option.length; index++) {
-        const item = option[index];
-        item.$parentItem = parentItem;
-        item.$parentList = parentList;
-        if (item.selector) {
-            makeRecursion(item.selector, item, option);
-        }
-    }
-    return option;
-}
-
-function isStringOrNumber(val) {
-    return ['string', 'number'].includes(typeof val);
-}
+import {
+    def,
+    has,
+    append,
+    addClass,
+    setStyle,
+    inverseClass,
+    createElement,
+    includeFromEvent,
+    isStringOrNumber,
+} from '../utils';
 
 export default class Setting extends Component {
     constructor(art) {
@@ -81,20 +75,32 @@ export default class Setting extends Component {
         }
     }
 
+    static makeRecursion(option, parentItem, parentList) {
+        for (let index = 0; index < option.length; index++) {
+            const item = option[index];
+            item.$parentItem = parentItem;
+            item.$parentList = parentList;
+            if (item.selector) {
+                Setting.makeRecursion(item.selector, item, option);
+            }
+        }
+        return option;
+    }
+
     update() {
         this.cache = new Map();
         this.events.forEach((event) => event());
         this.events = [];
         this.$parent.innerHTML = '';
-        this.option = makeRecursion(this.option);
+        this.option = Setting.makeRecursion(this.option);
         this.init(this.option);
-        return this;
+        return this.option;
     }
 
     add(setting) {
         this.option.push(setting);
         this.update();
-        return this;
+        return setting;
     }
 
     creatHeader(item) {
@@ -336,6 +342,31 @@ export default class Setting extends Component {
         return $item;
     }
 
+    updateStyle(width) {
+        const {
+            controls,
+            constructor,
+            template: { $player, $setting },
+        } = this.art;
+
+        if (controls.setting) {
+            const settingWidth = width || constructor.SETTING_WIDTH;
+            const { left: controlLeft, width: controlWidth } = controls.setting.getBoundingClientRect();
+            const { left: playerLeft, width: playerWidth } = $player.getBoundingClientRect();
+            const settingLeft = controlLeft - playerLeft + controlWidth / 2 - settingWidth / 2;
+            if (settingLeft + settingWidth > playerWidth) {
+                setStyle($setting, 'left', 'auto');
+                setStyle($setting, 'right', '10px');
+            } else {
+                setStyle($setting, 'left', `${settingLeft}px`);
+                setStyle($setting, 'right', 'auto');
+            }
+        } else {
+            setStyle($setting, 'left', 'auto');
+            setStyle($setting, 'right', '10px');
+        }
+    }
+
     init(option, width) {
         const { constructor } = this.art;
 
@@ -344,6 +375,7 @@ export default class Setting extends Component {
             inverseClass($panel, 'art-current');
             setStyle(this.$parent, 'width', `${$panel.dataset.width}px`);
             setStyle(this.$parent, 'height', `${$panel.dataset.height}px`);
+            this.updateStyle(Number($panel.dataset.width));
         } else {
             const $panel = createElement('div');
             addClass($panel, 'art-setting-panel');
@@ -371,6 +403,7 @@ export default class Setting extends Component {
             inverseClass($panel, 'art-current');
             setStyle(this.$parent, 'width', `${$panel.dataset.width}px`);
             setStyle(this.$parent, 'height', `${$panel.dataset.height}px`);
+            this.updateStyle(Number($panel.dataset.width));
 
             if (option[0] && option[0].$parentItem && option[0].$parentItem.mounted) {
                 option[0].$parentItem.mounted.call(this.art, $panel, option[0].$parentItem);

@@ -38,6 +38,7 @@
                     position: relative;
                     height: 50%;
                     width: 100%;
+                    transition: all 0.2s ease;
                     background: rgba(255, 255, 255, 0.2);
 
                     .art-progress-loaded {
@@ -80,7 +81,7 @@
                             top: 0;
                             width: 7px;
                             height: 100%;
-                            background: #fff;
+                            background: rgba(255, 255, 255, 0.5);
                             pointer-events: auto;
                         }
                     }
@@ -100,6 +101,10 @@
                             height: 100%;
                             pointer-events: none;
                             user-select: none;
+                        }
+
+                        &:hover {
+                            transform: scale(1.2, 1.2) !important;
                         }
                     }
 
@@ -126,10 +131,12 @@
             .art-control-thumbnails {
                 display: none;
                 position: absolute;
-                bottom: 8px;
+                bottom: 10px;
                 left: 0;
+                border-radius: 3px;
                 pointer-events: none;
                 background-color: rgba(0, 0, 0, 0.7);
+                box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.2), 0 1px 2px -1px rgb(0 0 0 / 0.2);
             }
 
             .art-control-loop {
@@ -185,7 +192,7 @@
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                opacity: 0.9;
+                opacity: 0.75;
                 font-size: 12px;
                 min-height: 36px;
                 min-width: 36px;
@@ -193,6 +200,7 @@
                 text-align: center;
                 cursor: pointer;
                 white-space: nowrap;
+                transition: opacity 0.1s ease-in-out;
                 .art-icon {
                     display: flex;
                     align-items: center;
@@ -200,14 +208,15 @@
                     float: left;
                     height: 36px;
                     width: 36px;
+                    transform: scale(1);
+                    transition: transform 0.2s ease-in-out;
+                    &:active {
+                        transform: scale(0.85);
+                    }
                 }
                 &:hover {
                     opacity: 1;
                 }
-            }
-
-            .art-control-onlyText {
-                padding: 0 10px;
             }
 
             .art-control-volume {
@@ -290,7 +299,6 @@
 
         &:hover {
             .art-progress .art-control-progress .art-control-progress-inner {
-                height: 100%;
                 .art-progress-indicator {
                     transform: scale(1, 1);
                     visibility: visible;

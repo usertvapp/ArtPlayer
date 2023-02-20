@@ -70,7 +70,7 @@ export default class Artplayer extends Emitter {
             this.on('ready', () => readyCallback.call(this, this));
         }
 
-        if (Artplayer.DEGUG) {
+        if (Artplayer.DEBUG) {
             const log = (msg) => console.log(`[ART.${this.id}] -> ${msg}`);
             log('Version@' + Artplayer.version);
             log('Env@' + Artplayer.env);
@@ -182,12 +182,14 @@ export default class Artplayer extends Emitter {
                 url: '',
                 type: '',
                 style: {},
+                escape: true,
                 encoding: 'utf-8',
             },
             moreVideoAttr: {
                 controls: false,
                 preload: utils.isSafari ? 'auto' : 'metadata',
             },
+            i18n: {},
             icons: {},
             customType: {},
             lang: navigator.language.toLowerCase(),
@@ -202,6 +204,10 @@ export default class Artplayer extends Emitter {
         return this.template.query;
     }
 
+    get video() {
+        return this.template.$video;
+    }
+
     destroy(removeHtml = true) {
         this.events.destroy();
         this.template.destroy(removeHtml);
@@ -211,7 +217,8 @@ export default class Artplayer extends Emitter {
     }
 }
 
-Artplayer.DEGUG = false;
+Artplayer.DEBUG = false;
+Artplayer.CONTEXTMENU = true;
 Artplayer.NOTICE_TIME = 2000;
 Artplayer.SETTING_WIDTH = 250;
 Artplayer.SETTING_ITEM_WIDTH = 200;
@@ -241,6 +248,11 @@ Artplayer.FAST_FORWARD_TIME = 1000;
 Artplayer.TOUCH_MOVE_RATIO = 0.5;
 Artplayer.VOLUME_STEP = 0.1;
 Artplayer.SEEK_STEP = 5;
+Artplayer.PROGRESS_HEIGHT = 6;
+Artplayer.PLAYBACK_RATE = [0.5, 0.75, 1, 1.25, 1.5, 2];
+Artplayer.ASPECT_RATIO = ['default', '4:3', '16:9'];
+Artplayer.FLIP = ['normal', 'horizontal', 'vertical'];
+Artplayer.FULLSCREEN_WEB_IN_BODY = false;
 
 if (typeof document !== 'undefined') {
     if (!document.getElementById('artplayer-style')) {
@@ -255,7 +267,6 @@ if (typeof window !== 'undefined') {
     window['Artplayer'] = Artplayer;
 }
 
-// eslint-disable-next-line no-console
 console.log(
     `%c ArtPlayer %c ${Artplayer.version} %c https://artplayer.org`,
     'color: #fff; background: #5f5f5f',

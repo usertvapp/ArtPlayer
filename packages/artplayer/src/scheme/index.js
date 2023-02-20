@@ -111,9 +111,11 @@ export default {
         url: s,
         type: s,
         style: o,
+        escape: b,
         encoding: s,
     },
     moreVideoAttr: o,
+    i18n: o,
     icons: o,
     customType: o,
 };

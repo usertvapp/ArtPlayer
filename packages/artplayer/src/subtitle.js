@@ -61,10 +61,14 @@ export default class Subtitle extends Component {
         const { $subtitle } = this.art.template;
         $subtitle.innerHTML = '';
         if (this.activeCue) {
-            $subtitle.innerHTML = this.activeCue.text
-                .split(/\r?\n/)
-                .map((item) => `<p>${escape(item)}</p>`)
-                .join('');
+            if (this.art.option.subtitle.escape) {
+                $subtitle.innerHTML = this.activeCue.text
+                    .split(/\r?\n/)
+                    .map((item) => `<p>${escape(item)}</p>`)
+                    .join('');
+            } else {
+                $subtitle.innerHTML = this.activeCue.text;
+            }
             this.art.emit('subtitleUpdate', this.activeCue.text);
         }
     }
@@ -87,6 +91,7 @@ export default class Subtitle extends Component {
         $newTrack.default = true;
         $newTrack.kind = kind;
         $newTrack.src = url;
+        $newTrack.track.mode = 'hidden';
 
         this.eventDestroy();
         remove($track);

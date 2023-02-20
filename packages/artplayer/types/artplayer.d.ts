@@ -7,7 +7,7 @@ import { Subtitle } from './subtitle';
 import { Icons } from './icons';
 import { Template } from './template';
 import { I18n } from './i18n';
-import { Setting } from './setting';
+import { Setting, SettingOption } from './setting';
 import { Component } from './component';
 
 export = Artplayer;
@@ -22,14 +22,15 @@ declare class Artplayer extends Player {
     static readonly build: string;
     static readonly config: Config;
     static readonly utils: Utils;
-    static readonly scheme: object;
+    static readonly scheme: Record<keyof Option, any>;
     static readonly Emitter: Function;
     static readonly validator: <T extends object>(option: T, scheme: object) => T;
     static readonly kindOf: (item: any) => string;
     static readonly html: Artplayer['template']['html'];
     static readonly option: Option;
 
-    static DEGUG: boolean;
+    static DEBUG: boolean;
+    static CONTEXTMENU: boolean;
     static NOTICE_TIME: number;
     static SETTING_WIDTH: number;
     static SETTING_ITEM_WIDTH: number;
@@ -58,6 +59,11 @@ declare class Artplayer extends Player {
     static TOUCH_MOVE_RATIO: number;
     static VOLUME_STEP: number;
     static SEEK_STEP: number;
+    static PROGRESS_HEIGHT: number;
+    static PLAYBACK_RATE: number[];
+    static ASPECT_RATIO: string[];
+    static FLIP: string[];
+    static FULLSCREEN_WEB_IN_BODY: boolean;
 
     readonly id: number;
     readonly option: Option;
@@ -68,13 +74,16 @@ declare class Artplayer extends Player {
     readonly isRotate: boolean;
     readonly isDestroy: boolean;
 
-    on(name: Events, fn: Function, ctx?: object): void;
-    once(name: Events, fn: Function, ctx?: object): void;
-    emit(name: Events): void;
-    off(name: Events, callback?: Function): void;
+    on<T extends keyof Events>(name: T, fn: (...args: Events[T]) => unknown, ctx?: object): unknown;
+    once<T extends keyof Events>(name: T, fn: (...args: Events[T]) => unknown, ctx?: object): unknown;
+    emit<T extends keyof Events>(name: T, ...args: unknown[]): unknown;
+    off<T extends keyof Events>(name: T, callback?: Function): unknown;
 
     query: Artplayer['template']['query'];
     proxy: Artplayer['events']['proxy'];
+    video: Artplayer['template']['$video'];
+
+    e: Record<keyof Events, { fn: Function; ctx: unknown }[]>;
 
     destroy(removeHtml?: boolean): void;
 
@@ -99,6 +108,7 @@ declare class Artplayer extends Player {
     };
 
     readonly storage: {
+        name: String;
         settings: Record<string, any>;
         get(key: string): any;
         set(key: string, value: any): void;
@@ -145,8 +155,9 @@ declare class Artplayer extends Player {
 
     readonly setting: {
         option: Setting[];
-        add(setting: Setting): Artplayer['setting'];
-        update(): Artplayer['setting'];
+        add(setting: Setting): SettingOption;
+        update(): SettingOption[];
+        updateStyle(width?: number): void;
     } & Component;
 
     readonly plugins: {

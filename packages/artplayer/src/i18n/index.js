@@ -5,10 +5,12 @@ import pl from './pl.json';
 import cs from './cs.json';
 import es from './es.json';
 import fa from './fa.json';
+import fr from './fr.json';
 
 export default class I18n {
     constructor(art) {
         this.art = art;
+
         this.languages = {
             'zh-cn': zhCn,
             'zh-tw': zhTw,
@@ -16,8 +18,10 @@ export default class I18n {
             cs: cs,
             es: es,
             fa: fa,
+            fr: fr,
         };
-        this.init();
+
+        this.update(art.option.i18n);
     }
 
     init() {

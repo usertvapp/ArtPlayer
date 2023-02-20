@@ -1,5 +1,5 @@
 (function () {
-    Artplayer.DEGUG = true;
+    Artplayer.DEBUG = true;
 
     var userAgent = window.navigator.userAgent;
     var isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent);
@@ -165,11 +165,11 @@
     }
 
     function runCode() {
-        Artplayer.instances.forEach(function (art) {
+        [...Artplayer.instances].forEach(function (art) {
             art.destroy(true);
         });
-        var code = editor.getValue();
-        eval(code);
+        eval(editor.getValue());
+        window.art = Artplayer.instances[0];
     }
 
     function initApp() {

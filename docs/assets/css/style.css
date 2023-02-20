@@ -75,13 +75,20 @@ img {
     display: flex;
     justify-content: space-between;
     height: 100%;
+    line-height: 1;
+}
+
+.header .qq {
+    display: flex;
+    align-items: center;
+    margin-right: 15px;
+    color: rgb(255 255 255 / 50%);
 }
 
 .header .typeScript {
     display: flex;
     align-items: center;
-    margin-right: 10px;
-    font-size: 12px;
+    margin-right: 15px;
 }
 
 .header .typeScript input {
@@ -98,7 +105,7 @@ img {
 .header .menus .item {
     display: flex;
     align-items: center;
-    margin-left: 20px;
+    margin-left: 15px;
     height: 100%;
     line-height: 1;
 }
@@ -118,7 +125,7 @@ img {
     z-index: 9;
     top: 45px;
     left: 0;
-    width: 200px;
+    width: 250px;
     padding: 0 10px;
     background: #2b2b2b;
 }
@@ -144,7 +151,7 @@ img {
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 100px;
+    padding: 0 10px;
     height: 100%;
     line-height: 1;
     cursor: pointer;
@@ -258,4 +265,15 @@ img {
     background-repeat: no-repeat;
     background-position: center center;
     background-size: contain;
+}
+
+.fullscreenWeb {
+    position: fixed;
+    z-index: 9999;
+    width: 100%;
+    height: 100%;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
 }

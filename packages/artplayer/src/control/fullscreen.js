@@ -15,8 +15,8 @@ export default function fullscreen(option) {
                 art.fullscreen = !art.fullscreen;
             });
 
-            art.on('fullscreen', (value) => {
-                if (value) {
+            art.on('fullscreen', (state) => {
+                if (state) {
                     tooltip($control, i18n.get('Exit Fullscreen'));
                     setStyle($fullscreenOn, 'display', 'none');
                     setStyle($fullscreenOff, 'display', 'inline-flex');

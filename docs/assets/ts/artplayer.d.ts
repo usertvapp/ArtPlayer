@@ -10,14 +10,15 @@ declare class Artplayer extends Player {
     static readonly build: string;
     static readonly config: Config;
     static readonly utils: Utils;
-    static readonly scheme: object;
+    static readonly scheme: Record<keyof Option, any>;
     static readonly Emitter: Function;
     static readonly validator: <T extends object>(option: T, scheme: object) => T;
     static readonly kindOf: (item: any) => string;
     static readonly html: Artplayer['template']['html'];
     static readonly option: Option;
 
-    static DEGUG: boolean;
+    static DEBUG: boolean;
+    static CONTEXTMENU: boolean;
     static NOTICE_TIME: number;
     static SETTING_WIDTH: number;
     static SETTING_ITEM_WIDTH: number;
@@ -46,6 +47,11 @@ declare class Artplayer extends Player {
     static TOUCH_MOVE_RATIO: number;
     static VOLUME_STEP: number;
     static SEEK_STEP: number;
+    static PROGRESS_HEIGHT: number;
+    static PLAYBACK_RATE: number[];
+    static ASPECT_RATIO: string[];
+    static FLIP: string[];
+    static FULLSCREEN_WEB_IN_BODY: boolean;
 
     readonly id: number;
     readonly option: Option;
@@ -56,13 +62,16 @@ declare class Artplayer extends Player {
     readonly isRotate: boolean;
     readonly isDestroy: boolean;
 
-    on(name: Events, fn: Function, ctx?: object): void;
-    once(name: Events, fn: Function, ctx?: object): void;
-    emit(name: Events): void;
-    off(name: Events, callback?: Function): void;
+    on<T extends keyof Events>(name: T, fn: (...args: Events[T]) => unknown, ctx?: object): unknown;
+    once<T extends keyof Events>(name: T, fn: (...args: Events[T]) => unknown, ctx?: object): unknown;
+    emit<T extends keyof Events>(name: T, ...args: unknown[]): unknown;
+    off<T extends keyof Events>(name: T, callback?: Function): unknown;
 
     query: Artplayer['template']['query'];
     proxy: Artplayer['events']['proxy'];
+    video: Artplayer['template']['$video'];
+
+    e: Record<keyof Events, { fn: Function; ctx: unknown }[]>;
 
     destroy(removeHtml?: boolean): void;
 
@@ -87,6 +96,7 @@ declare class Artplayer extends Player {
     };
 
     readonly storage: {
+        name: String;
         settings: Record<string, any>;
         get(key: string): any;
         set(key: string, value: any): void;
@@ -133,8 +143,9 @@ declare class Artplayer extends Player {
 
     readonly setting: {
         option: Setting[];
-        add(setting: Setting): Artplayer['setting'];
-        update(): Artplayer['setting'];
+        add(setting: Setting): SettingOption;
+        update(): SettingOption[];
+        updateStyle(width?: number): void;
     } & Component;
 
     readonly plugins: {
@@ -145,7 +156,7 @@ declare class Artplayer extends Player {
 
 
 
-type Selector = {
+export type Selector = {
     /**
      * Whether the default is selected
      */
@@ -332,69 +343,66 @@ export type Config = {
         'webkitExitFullscreen',
     ];
 };
-export type Events =
-    | 'video:canplay'
-    | 'video:canplaythrough'
-    | 'video:complete'
-    | 'video:durationchange'
-    | 'video:emptied'
-    | 'video:ended'
-    | 'video:loadeddata'
-    | 'video:loadeddata'
-    | 'video:loadedmetadata'
-    | 'video:pause'
-    | 'video:play'
-    | 'video:playing'
-    | 'video:progress'
-    | 'video:ratechange'
-    | 'video:seeked'
-    | 'video:seeking'
-    | 'video:stalled'
-    | 'video:suspend'
-    | 'video:timeupdate'
-    | 'video:volumechange'
-    | 'video:waiting'
-    | 'hotkey'
-    | 'destroy'
-    | 'customType'
-    | 'url'
-    | 'subtitleUpdate'
-    | 'subtitleLoad'
-    | 'subtitleSwitch'
-    | 'focus'
-    | 'blur'
-    | 'dblclick'
-    | 'click'
-    | 'setBar'
-    | 'hover'
-    | 'mousemove'
-    | 'resize'
-    | 'view'
-    | 'aspectRatio'
-    | 'autoHeight'
-    | 'autoSize'
-    | 'ready'
-    | 'error'
-    | 'flip'
-    | 'fullscreen'
-    | 'fullscreenWeb'
-    | 'loop'
-    | 'mini'
-    | 'pause'
-    | 'pip'
-    | 'playbackRate'
-    | 'play'
-    | 'screenshot'
-    | 'seek'
-    | 'subtitleOffset'
-    | 'switch'
-    | 'restart'
-    | 'volume'
-    | 'lock'
-    | 'selector'
-    | (string & Record<never, never>);
 
-type I18nKeys = 'en' | 'zh-cn' | 'zh-tw' | 'pl' | 'cs' | 'es' | 'fa' | (string & Record<never, never>);
+
+
+
+export type Events = {
+    'video:canplay': [event: Event];
+    'video:canplaythrough': [event: Event];
+    'video:complete': [event: Event];
+    'video:durationchange': [event: Event];
+    'video:emptied': [event: Event];
+    'video:ended': [event: Event];
+    'video:error': [event: Error];
+    'video:loadeddata': [event: Event];
+    'video:loadedmetadata': [event: Event];
+    'video:pause': [event: Event];
+    'video:play': [event: Event];
+    'video:playing': [event: Event];
+    'video:progress': [event: Event];
+    'video:ratechange': [event: Event];
+    'video:seeked': [event: Event];
+    'video:seeking': [event: Event];
+    'video:stalled': [event: Event];
+    'video:suspend': [event: Event];
+    'video:timeupdate': [event: Event];
+    'video:volumechange': [event: Event];
+    'video:waiting': [event: Event];
+    hotkey: [event: Event];
+    destroy: [];
+    url: [url: string];
+    subtitleUpdate: [text: string];
+    subtitleLoad: [url: string];
+    subtitleSwitch: [url: string];
+    focus: [];
+    blur: [];
+    dblclick: [];
+    click: [];
+    hover: [state: boolean, event: Event];
+    mousemove: [event: Event];
+    resize: [];
+    view: [state: boolean];
+    lock: [state: boolean];
+    aspectRatio: [aspectRatio: AspectRatio];
+    autoHeight: [height: number];
+    autoSize: [];
+    ready: [];
+    error: [error: Error, reconnectTime: number];
+    flip: [flip: Flip];
+    fullscreen: [state: boolean];
+    fullscreenWeb: [state: boolean];
+    mini: [state: boolean];
+    pause: [];
+    pip: [state: boolean];
+    play: [];
+    screenshot: [dataUri: string];
+    seek: [currentTime: number];
+    subtitleOffset: [offset: number];
+    restart: [];
+};
+
+type I18nKeys = 'en' | 'zh-cn' | 'zh-tw' | 'pl' | 'cs' | 'es' | 'fa' | 'fr' | (string & Record<never, never>);
 
 type I18nValue = {
     'Video Info': string;
@@ -761,6 +769,11 @@ export type Option = {
     }>;
 
     /**
+     * Custom i18n
+     */
+    i18n?: I18n;
+
+    /**
      * Custom default icons
      */
     icons?: {
@@ -777,9 +790,9 @@ export type Option = {
 
 export default Option;
 
-type AspectRatio = 'default' | '4:3' | '16:9' | void;
-type PlaybackRate = 0.5 | 0.75 | 1.0 | 1.25 | 1.5 | 1.75 | 2.0 | void;
-type Flip = 'normal' | 'horizontal' | 'vertical' | void;
+export type AspectRatio = 'default' | '4:3' | '16:9' | (string & Record<never, never>);
+export type PlaybackRate = 0.5 | 0.75 | 1.0 | 1.25 | 1.5 | 1.75 | 2.0 | (number & Record<never, never>);
+export type Flip = 'normal' | 'horizontal' | 'vertical' | (string & Record<never, never>);
 
 export declare class Player {
     get aspectRatio(): AspectRatio;
@@ -839,7 +852,7 @@ export declare class Player {
     pause(): void;
     play(): Promise<void>;
     toggle(): void;
-    attr(key: string, value: any): void;
+    attr(key: string, value?: any): unknown;
     switchUrl(url: string): Promise<string>;
     switchQuality(url: string): Promise<string>;
     getDataURL(): Promise<string>;
@@ -862,6 +875,8 @@ type Props<T> = {
     $parentItem: Setting;
     $parentList: Setting[];
 } & Omit<T, 'html' | 'icon' | 'tooltip'>;
+
+export type SettingOption = Props<Setting>;
 
 export type Setting = {
     /**
@@ -902,7 +917,7 @@ export type Setting = {
     /**
      * When selector item click
      */
-    onSelect?(this: Artplayer, item: Props<Setting>, element: HTMLDivElement, event: Event): void;
+    onSelect?(this: Artplayer, item: SettingOption, element: HTMLDivElement, event: Event): void;
 
     /**
      * Custom switch item
@@ -912,22 +927,22 @@ export type Setting = {
     /**
      * When switch item click
      */
-    onSwitch?(this: Artplayer, item: Props<Setting>, element: HTMLDivElement, event: Event): void;
+    onSwitch?(this: Artplayer, item: SettingOption, element: HTMLDivElement, event: Event): void;
 
     /**
      * Custom range item
      */
-    range?: number[] | number;
+    range?: [value?: number, min?: number, max?: number, step?: number];
 
     /**
      * When range item change
      */
-    onRange?(this: Artplayer, item: Props<Setting>, element: HTMLDivElement, event: Event): void;
+    onRange?(this: Artplayer, item: SettingOption, element: HTMLDivElement, event: Event): void;
 
     /**
      * When range item change in real time
      */
-    onChange?(this: Artplayer, item: Props<Setting>, element: HTMLDivElement, event: Event): void;
+    onChange?(this: Artplayer, item: SettingOption, element: HTMLDivElement, event: Event): void;
 
     [key: string]: any;
 };
@@ -957,6 +972,11 @@ export type Subtitle = {
      * The subtitle encoding, default utf-8
      */
     encoding?: string;
+
+    /**
+     * Whether use escape, default true
+     */
+    escape?: boolean;
 };
 
 export type Template = {
@@ -1038,4 +1058,6 @@ export type Utils = {
     clamp(num: number, a: number, b: number): number;
     secondToTime(second: number): string;
     escape(str: string): string;
+    capitalize(str: string): string;
+    isStringOrNumber(val: any): boolean;
 };

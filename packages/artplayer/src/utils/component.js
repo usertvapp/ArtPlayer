@@ -1,4 +1,14 @@
-import { hasClass, addClass, removeClass, append, setStyles, tooltip, getStyle, inverseClass, createElement } from './dom';
+import {
+    hasClass,
+    addClass,
+    removeClass,
+    append,
+    setStyles,
+    tooltip,
+    getStyle,
+    inverseClass,
+    createElement,
+} from './dom';
 import validator from 'option-validator';
 import { ComponentOption } from '../scheme';
 import { has, def } from './property';
@@ -82,10 +92,6 @@ export default class Component {
             option.mounted.call(this.art, $ref);
         }
 
-        if ($ref.childNodes.length === 1 && $ref.childNodes[0].nodeType === 3) {
-            addClass($ref, 'art-control-onlyText');
-        }
-
         def(this, name, {
             value: $ref,
         });
@@ -116,6 +122,10 @@ export default class Component {
         append($list, list);
         append($ref, $list);
 
+        if (this.art.option.backdrop) {
+            addClass($list, 'art-backdrop-filter');
+        }
+
         const setLeft = () => {
             const left = getStyle($ref, 'width') / 2 - getStyle($list, 'width') / 2;
             $list.style.left = `${left}px`;
@@ -138,7 +148,6 @@ export default class Component {
                 }
             }
             setLeft();
-            this.art.emit('selector', find, $item);
         });
     }
 }
